@@ -1,0 +1,9 @@
+[app]
+name = "ollama"
+image = "docker.io/ollama/ollama:0.5.4"
+http = { port = 11434, health = "/api/version" }
+state = { dirs = ["models"], mount = "/root/.ollama", snapshot = "never" }
+auth = { passkey = true, header = "" }
+limits = { cpu = "400%", mem = "16G" }
+skill = "Ollama. No UI; the API at /api/generate is capped by the forward-auth in front."
+placement = { needs = ["gpu"] }

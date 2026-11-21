@@ -1,0 +1,9 @@
+[app]
+name = "grafana"
+image = "docker.io/grafana/grafana-oss:11.3.0@sha256:a0f881232a6fb71a0554a47d0fe2203b6888fe77f4cefb7ea62bed7eb54e13c3"
+http = { port = 3000, health = "/api/health" }
+state = { dirs = ["."], mount = "/var/lib/grafana", snapshot = "nightly" }
+auth = { passkey = true, header = "X-WEBAUTH-USER" }
+limits = { cpu = "100%", mem = "512M" }
+skill = "Grafana. HTTP API at /api. The signed-in user comes from the passkey session."
+env = { GF_AUTH_PROXY_ENABLED = "true", GF_AUTH_PROXY_HEADER_NAME = "X-WEBAUTH-USER", GF_AUTH_PROXY_HEADER_PROPERTY = "username", GF_AUTH_PROXY_AUTO_SIGN_UP = "true", GF_AUTH_DISABLE_LOGIN_FORM = "true", GF_ANALYTICS_REPORTING_ENABLED = "false", GF_ANALYTICS_CHECK_FOR_UPDATES = "false" }

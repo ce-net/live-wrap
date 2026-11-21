@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#070807">
+<title>Live wrap</title>
+<meta name="description" content="One catalog entry per app: the upstream image pinned by digest, CPU and memory caps, a forward-auth gate that denies by default and sets the user header the app trusts, and sealed snapshots that refuse to restore when tampered.">
+<link rel="stylesheet" href="tokens.css">
+<link rel="stylesheet" href="components.css">
+<script>try{var t=localStorage.getItem("ce-theme");if(t)document.documentElement.setAttribute("data-theme",t)}catch(e){}</script>
+<style>
+  body{margin:0;background:var(--bg,#070807);color:var(--ink,#f2f3ef);font-family:Geist,system-ui,sans-serif}
+  main{max-width:980px;margin:0 auto;padding:56px 16px 80px}
+  header.top{display:flex;justify-content:space-between;align-items:center;max-width:980px;margin:0 auto;padding:16px}
+  .brand{font-family:"JetBrains Mono",monospace;font-size:12px;letter-spacing:.18em;text-transform:uppercase}
+  pre.code{font-family:"JetBrains Mono",monospace;font-size:13px;line-height:1.75;margin:0;padding:18px 18px 18px 0;overflow-x:auto;counter-reset:l}
+  pre.code span{display:block;white-space:pre;counter-increment:l}
+  pre.code span::before{content:counter(l);display:inline-block;width:38px;text-align:right;margin-right:16px;color:var(--faint,#5d625b)}
+  section{margin-top:28px}
+  h2{font-family:Geist,sans-serif;font-size:10px;letter-spacing:.18em;text-transform:uppercase;color:var(--muted,#8a8f87);font-weight:500;margin:0 0 10px}
+  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+  .rows{padding:4px 16px}
+  .rows div{display:flex;justify-content:space-between;gap:16px;padding:9px 0;border-bottom:1px solid rgba(255,255,255,.07);font-size:13px}
+  .rows div:last-child{border-bottom:0}
+  .rows b{font-weight:500}
+  .rows span{font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;color:var(--muted,#8a8f87);text-align:right;word-break:break-all}
+  .note{font-size:14px;line-height:1.6;color:var(--muted,#8a8f87);max-width:70ch}
+  .ok{color:#9bd16b}.bad{color:#ef4444}
+  table{width:100%;border-collapse:collapse;font-family:"JetBrains Mono",monospace;font-size:12px;font-variant-numeric:tabular-nums}
+  th,td{text-align:left;padding:8px 10px;border-bottom:1px solid rgba(255,255,255,.07)}
+  th{font-family:Geist,sans-serif;font-size:9.5px;letter-spacing:.12em;text-transform:uppercase;color:var(--muted,#8a8f87);font-weight:500}
+  .scroll{overflow-x:auto}
+  a{color:var(--acc,#f5a524)}
+  @media (max-width:640px){.stats{grid-template-columns:repeat(2,1fr)}pre.code{font-size:11px}main{padding-top:24px}}
+</style>
+</head>
+<body>
+<header class="top"><span class="brand">ce / live wrap</span>
+  <nav class="btns glass"><a class="btn quiet" href="https://github.com/ce-net/live-wrap">Source</a>
+  <button class="btn" id="theme" type="button">Light</button></nav></header>
+<main>
+  <div class="crumb">ce / <b>Cells</b> / live wrap</div>
+  <h1 class="display over">Any self-hosted app behind a passkey.</h1>
+  <p class="note">One catalog entry per app: the upstream image pinned by digest, CPU and memory caps, a forward-auth gate that denies by default and sets the user header the app trusts, and sealed snapshots that refuse to restore when tampered.</p>
+  <section class="glass ticks"><pre class="code" aria-label="catalog/grafana.toml"><span>[app]</span><span>name = &quot;grafana&quot;</span><span>image = &quot;docker.io/grafana/grafana-oss:11.3.0@sha256:a0f881232a6fb71a0554a47d0fe2203b6888fe77f4cefb7ea62bed7eb54e13c3&quot;</span><span>http = { port = 3000,</span><span>      health = &quot;/api/health&quot; }</span><span>state = { dirs = [&quot;.&quot;],</span><span>      mount = &quot;/var/lib/grafana&quot;,</span><span>      snapshot = &quot;nightly&quot; }</span><span>auth = { passkey = true,</span><span>      header = &quot;X-WEBAUTH-USER&quot; }</span><span>limits = { cpu = &quot;100%&quot;,</span><span>      mem = &quot;512M&quot; }</span><span>skill = &quot;Grafana. HTTP API at /api. The signed-in user comes from the passkey session.&quot;</span></pre></section>
+<section><h2>Gitea, 2026-11-21</h2><div class="glass rows"><div><b>up</b><span>healthy in 13.8 s, 159 MiB of 1 GiB</span></div><div><b>no session</b><span>401</span></div><div><b>spoofed user header</b><span>401</span></div><div><b>login</b><span>user alice auto-registered, no second password</span></div><div><b>git push through the gate</b><span>0.9 s, commit 2bbce5f9</span></div><div><b>snapshot</b><span>138 ms, 54 306 bytes, sha256 26cc55ed</span></div><div><b>tampered restore</b><span>refused</span></div><div><b>restore, up again</b><span>98 ms, 2.7 s</span></div><div><b>clone after restore</b><span>commit 2bbce5f9 and its README</span></div></div></section>
+<section><h2>Grafana, 2026-11-21</h2><div class="glass rows"><div><b>up</b><span>healthy in 7.7 s, 69 MiB of 512 MiB</span></div><div><b>no session, spoofed header, gitea session</b><span>401, 401, 401</span></div><div><b>session</b><span>/api/user = alice, Auth Proxy</span></div><div><b>login form</b><span>disabled</span></div></div></section>
+<section><h2>Catalog</h2><div class="glass rows"><div><b>entries</b><span>gitea, grafana, code-server, nextcloud, immich, home-assistant, ollama</span></div><div><b>lint and dry-run</b><span>7 of 7</span></div><div><b>live</b><span>gitea, grafana</span></div><div><b>ollama</b><span>lint-only: needs a GPU node</span></div></div></section>
+  <section><h2>Not done yet</h2><ul class="note"><li>Sessions came from a demo issuer key standing in for account-passkey; no passkey login in this run.</li><li>A local process can reach the app&#x27;s loopback port directly with a user header; the app must sit on a network only the gate reaches.</li><li>Nightly snapshots to a second node, SKILL.md from [skill], and live runs of the other five apps.</li></ul></section>
+  <p class="note" style="margin-top:28px">Raw record: <a href="runs/2026-11-21-gitea-grafana.json">2026-11-21-gitea-grafana.json</a>. A live system, stopped after the run. Licence: Apache-2.0.</p>
+</main>
+<script>
+const $ = (id) => document.getElementById(id);
+$("theme").addEventListener("click", () => {
+  const light = document.documentElement.getAttribute("data-theme") !== "light";
+  if (light) document.documentElement.setAttribute("data-theme", "light"); else document.documentElement.removeAttribute("data-theme");
+  $("theme").textContent = light ? "Dark" : "Light";
+  try { localStorage.setItem("ce-theme", light ? "light" : ""); } catch (e) {}
+});
+</script>
+</body>
+</html>

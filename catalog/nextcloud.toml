@@ -1,0 +1,8 @@
+[app]
+name = "nextcloud"
+image = "docker.io/library/nextcloud:30.0.4-apache"
+http = { port = 80, health = "/status.php" }
+state = { dirs = ["html"], mount = "/var/www/html", snapshot = "nightly" }
+auth = { passkey = true, header = "X-WEBAUTH-USER", bootstrap = "occ app:install user_saml" }
+limits = { cpu = "200%", mem = "2G" }
+skill = "Nextcloud. WebDAV at /remote.php/dav. Admin password is in keys as nextcloud/admin."

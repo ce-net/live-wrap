@@ -1,0 +1,13 @@
+[workspace]
+resolver = "2"
+members = ["crates/wrap"]
+
+[workspace.package]
+version = "0.1.0"
+edition = "2021"
+license = "Apache-2.0"
+authors = ["Leif Rydenfalk"]
+repository = "https://github.com/ce-net/live-wrap"
+
+[profile.release]
+debug = 0

@@ -1,0 +1,9 @@
+[app]
+name = "code-server"
+image = "docker.io/codercom/code-server:4.96.2"
+http = { port = 8080, health = "/healthz" }
+state = { dirs = ["home"], mount = "/home/coder", snapshot = "nightly" }
+auth = { passkey = true, header = "" }
+limits = { cpu = "200%", mem = "2G" }
+skill = "VS Code in the browser. No login of its own: only the passkey session reaches it."
+args = ["--auth", "none", "--bind-addr", "0.0.0.0:8080"]

@@ -1,0 +1,28 @@
+{
+  "run": "2026-11-21, live system on one server (aarch64), containers capped by their catalog limits, wrap.auth under systemd-run --user CPUQuota=10% MemoryMax=64M; everything stopped and removed afterwards",
+  "session_issuer": "a demo key made for this run; it stands in for account-passkey, so no passkey login happened in this run",
+  "snapshot_key": "a demo key made for this run; a deployment keeps its seed in the keys cell",
+  "gitea": {
+    "image": "docker.io/gitea/gitea:1.22.6-rootless@sha256:4216d612992a25ed5fe6062679ca0be0b224f93c0b6fdba03e6c8f3d623cfb4e",
+    "limits": "--cpus=1 --memory=1G --pids-limit=512 --cap-drop=ALL, 159 MiB in use",
+    "up_ms": 15357, "healthy_ms": 13812,
+    "no_session": 401, "spoofed_user_header_without_session": 401,
+    "session_user": "alice, created by reverse-proxy auto-registration, no second password",
+    "push": { "ms": 900, "repo": "alice/demo", "commit": "2bbce5f9319dae547e878c21f0181be79fbc27af", "via": "git over HTTP through wrap.auth, the session as the Basic password" },
+    "snapshot": { "ms": 138, "sha256": "26cc55ed3e6c391d6525058413111176c00f245339253b2e1611878b5e8fa704", "bytes": 54306, "note": "container stopped first so the sqlite file is quiet" },
+    "removed": "container and state dir deleted",
+    "tampered_restore": "refused: archive sha256 2506df5959e0... does not match the sealed 26cc55ed3e6c...",
+    "restore_ms": 98,
+    "up_again_ms": 2738,
+    "clone_after_restore": { "commit": "2bbce5f9319dae547e878c21f0181be79fbc27af", "readme": "hello from a wrapped gitea" },
+    "gate_decisions": { "allow": 9, "deny": 4 }
+  },
+  "grafana": {
+    "image": "docker.io/grafana/grafana-oss:11.3.0@sha256:a0f881232a6fb71a0554a47d0fe2203b6888fe77f4cefb7ea62bed7eb54e13c3",
+    "limits": "--cpus=1 --memory=512M, 69 MiB in use",
+    "up_ms": 8466, "healthy_ms": 7744,
+    "no_session": 401, "spoofed_user_header_without_session": 401, "gitea_session_on_grafana": 401,
+    "session": { "status": 200, "login": "alice", "authLabels": ["Auth Proxy"], "login_form": "disabled (GF_AUTH_DISABLE_LOGIN_FORM)" }
+  },
+  "found": "the container's own port is published on 127.0.0.1 only, but a process on the same machine that calls it directly with a user header gets in (grafana returned 200 to X-WEBAUTH-USER: admin). wrap.auth is the only path from the network; on a shared machine the app must sit on a network only wrap.auth reaches. Not built yet."
+}

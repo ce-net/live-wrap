@@ -1,0 +1,8 @@
+[app]
+name = "immich"
+image = "ghcr.io/immich-app/immich-server:v1.123.0"
+http = { port = 2283, health = "/api/server/ping" }
+state = { dirs = ["upload"], mount = "/usr/src/app/upload", snapshot = "nightly" }
+auth = { passkey = true, header = "", oidc = true }
+limits = { cpu = "200%", mem = "4G" }
+skill = "Immich photos. API at /api. Forward-auth in front; OIDC for the mobile app is later."

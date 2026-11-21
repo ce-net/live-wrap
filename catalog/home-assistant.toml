@@ -1,0 +1,8 @@
+[app]
+name = "home-assistant"
+image = "ghcr.io/home-assistant/home-assistant:2024.12.5"
+http = { port = 8123, health = "/manifest.json" }
+state = { dirs = ["config"], mount = "/config", snapshot = "nightly" }
+auth = { passkey = true, header = "X-WEBAUTH-USER", trusted_proxy = true }
+limits = { cpu = "100%", mem = "1G" }
+skill = "Home Assistant. REST API at /api. Long-lived token is in keys as home-assistant/token."
